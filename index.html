@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Calendar Time Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* Custom styles if needed */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+        }
+        /* Simple loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Calendar Time Analyzer</h1>
+
+        <div class="mb-6 p-4 bg-blue-50 rounded-md border border-blue-200">
+            <h2 class="text-lg font-semibold mb-3 text-blue-800">Configuration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="startHour" class="block text-sm font-medium text-gray-700 mb-1">Work Start Hour (0-23):</label>
+                    <input type="number" id="startHour" value="9" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="endHour" class="block text-sm font-medium text-gray-700 mb-1">Work End Hour (0-23):</label>
+                    <input type="number" id="endHour" value="17" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="daysToQuery" class="block text-sm font-medium text-gray-700 mb-1">Number of Past Days:</label>
+                    <input type="number" id="daysToQuery" value="7" min="1" max="90" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+             <p class="text-xs text-gray-500 mt-2">Note: Analysis uses your browser's local time zone and excludes weekends.</p>
+        </div>
+
+        <div class="flex justify-center space-x-4 mb-6">
+            <button id="authorize_button" onclick="handleAuthClick()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50" disabled>
+                Sign In & Authorize
+            </button>
+            <button id="signout_button" onclick="handleSignoutClick()" style="display: none;" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                Sign Out
+            </button>
+             <button id="fetch_button" onclick="fetchCalendarData()" style="display: none;" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50">
+                Fetch & Analyze Data <span id="loadingSpinner" class="loader" style="display: none;"></span>
+            </button>
+        </div>
+
+        <div id="results" class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200" style="display: none;">
+             <h2 class="text-lg font-semibold mb-3 text-gray-800">Analysis Results</h2>
+             <pre id="content" class="text-sm text-gray-700 whitespace-pre-wrap"></pre>
+             <div id="error-message" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md" style="display: none;"></div>
+        </div>
+
+         <div id="message-box" class="fixed top-5 right-5 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-md shadow-lg" role="alert" style="display: none; z-index: 1000;">
+            <strong class="font-bold">Notice:</strong>
+            <span class="block sm:inline" id="message-text"></span>
+            <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeMessageBox()">
+                <svg class="fill-current h-6 w-6 text-yellow-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+            </span>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const CLIENT_ID = '132109609630-rtd6vrmntsjm8iljhk8f0cfe1rqr6l3b.apps.googleusercontent.com'; // IMPORTANT: Replace with your actual Google Client ID
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+        // --- Global Variables ---
+        let tokenClient; // For Google Identity Services (GIS) based token acquisition
+        let gapiInited = false; // Flag for GAPI library initialization
+        let gisInited = false; // Flag for GIS library initialization
+
+        // --- DOM Elements ---
+        const authorizeButton = document.getElementById('authorize_button');
+        const signoutButton = document.getElementById('signout_button');
+        const fetchButton = document.getElementById('fetch_button');
+        const resultsDiv = document.getElementById('results');
+        const contentElement = document.getElementById('content');
+        const errorMessageElement = document.getElementById('error-message');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+
+        // --- Initialization ---
+
+        // Function called by GAPI script loading callback
+        function gapiLoadedCallback() {
+            console.log("GAPI script loaded via callback.");
+            // Load the 'client' discovery document for the Calendar API.
+            gapi.load('client', initializeGapiClient);
+        }
+
+        // Initializes the Google API client with the Calendar API discovery doc.
+        async function initializeGapiClient() {
+            console.log("Attempting to initialize GAPI client...");
+            try {
+                await gapi.client.init({
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+                });
+                gapiInited = true;
+                console.log("GAPI client initialized successfully.");
+                maybeEnableButtons();
+            } catch (error) {
+                console.error('Error initializing GAPI client:', error);
+                displayError('Failed to initialize Google API Client. Check console for details.');
+                gapiInited = false; // Ensure flag is false on error
+                maybeEnableButtons(); // Update button state even on error
+            }
+        }
+
+        // Initializes the GIS token client. Called after DOM is loaded.
+        function initializeGisClient() {
+             console.log("Attempting to initialize GIS token client...");
+             // Check if the google object is available
+             if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+                 console.error("GIS library (google.accounts.oauth2) not loaded yet.");
+                 // Optionally, retry after a short delay, but defer should handle this.
+                 // setTimeout(initializeGisClient, 500);
+                 displayError('Failed to initialize Google Sign-In library. Please refresh the page.');
+                 gisInited = false;
+                 maybeEnableButtons();
+                 return;
+             }
+
+            try {
+                // Initialize the token client
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPES,
+                    callback: tokenResponseCallback, // Handles token response
+                    error_callback: handleGisError, // Handles errors during token request
+                });
+                gisInited = true;
+                console.log("GIS token client initialized successfully.");
+            } catch (error) {
+                console.error('Error initializing GIS client:', error);
+                displayError('Failed to initialize Google Sign-In. Is the Client ID correct? Check console.');
+                gisInited = false; // Ensure flag is false on error
+            }
+            // Always call maybeEnableButtons after attempting GIS init
+            maybeEnableButtons();
+        }
+
+        // --- Authentication ---
+
+        // Initiates the OAuth 2.0 flow.
+        function handleAuthClick() {
+            console.log("handleAuthClick called");
+             if (!gisInited || !tokenClient) { // Check gisInited flag as well
+                console.error("Token client not initialized yet.");
+                displayMessage("Initialization incomplete. Please wait a moment and try again.");
+                return;
+            }
+            if (gapi.client.getToken() === null) {
+                 console.log("Requesting access token with consent prompt.");
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                console.log("Requesting access token without prompt (existing session).");
+                tokenClient.requestAccessToken({prompt: ''});
+            }
+        }
+
+        // Callback function for GIS token client.
+        function tokenResponseCallback(resp) {
+            if (resp.error) {
+                 console.error('GIS Token Error:', resp.error, resp);
+                 let message = `Error getting access token: ${resp.error}`;
+                 if (resp.error === 'popup_closed_by_user') {
+                    message = 'Sign-in popup closed before completion.';
+                 } else if (resp.error === 'access_denied') {
+                     message = 'Access denied. Please grant permission to access your calendar.';
+                 } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                    message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.';
+                 } else if (resp.error === 'invalid_request' || resp.error === 'unauthorized_client' || resp.error === 'invalid_grant' || resp.error === 'invalid_scope') {
+                     message = `Authorization error (${resp.error}). Check Client ID, Authorized Origins, and Scopes in Google Cloud Console.`;
+                 }
+                 displayMessage(message);
+                 updateSigninStatus(false); // Ensure UI reflects lack of token
+                 return;
+            }
+            console.log("Access token received successfully.");
+            // Successfully got access token. Set it in the GAPI client.
+            gapi.client.setToken(resp);
+            updateSigninStatus(true);
+            displayMessage('Authorization successful! You can now fetch data.');
+        }
+
+        // Handles specific GIS errors during token request.
+        function handleGisError(error) {
+            console.error('GIS Error during token request:', error);
+            let message = `Google Sign-In Error: ${error.type || 'Unknown error'}.`;
+             if (error.type === 'popup_closed') {
+                message = 'Sign-in popup was closed before completion.';
+             } else if (error.type === 'session_not_created' && error.message?.includes('invalid client id')) {
+                 message = 'Sign-in Error: Invalid Client ID. Please ensure it is configured correctly in the Google Cloud Console and in the script.';
+             } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                 message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.';
+             } else if (error.message) {
+                 message += ` Details: ${error.message}`;
+             }
+            displayMessage(message);
+            updateSigninStatus(false);
+        }
+
+
+        // Signs the user out.
+        function handleSignoutClick() {
+            console.log("handleSignoutClick called");
+            const token = gapi.client.getToken();
+            if (token !== null) {
+                 console.log("Revoking token...");
+                 // Ensure google object and revoke function exist before calling
+                 if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2 && google.accounts.oauth2.revoke) {
+                    google.accounts.oauth2.revoke(token.access_token, (done) => {
+                        console.log("Token revoked callback:", done);
+                        gapi.client.setToken(''); // Clear token in GAPI
+                        updateSigninStatus(false);
+                        resultsDiv.style.display = 'none'; // Hide results on sign out
+                        contentElement.innerText = ''; // Clear previous results
+                        errorMessageElement.style.display = 'none'; // Hide errors
+                        displayMessage('You have been signed out.');
+                    });
+                 } else {
+                     console.error("google.accounts.oauth2.revoke function not found. Cannot revoke token.");
+                     // Still clear local token and update UI
+                     gapi.client.setToken('');
+                     updateSigninStatus(false);
+                     displayMessage('Signed out locally (could not contact Google to revoke).');
+                 }
+            } else {
+                 console.log("No token found to revoke, updating UI.");
+                 updateSigninStatus(false); // Ensure UI is updated even if no token existed
+            }
+        }
+
+        // Updates the UI based on the sign-in status.
+        function updateSigninStatus(isSignedIn) {
+             console.log("Updating sign-in status:", isSignedIn);
+            if (isSignedIn) {
+                authorizeButton.style.display = 'none';
+                signoutButton.style.display = 'inline-block';
+                fetchButton.style.display = 'inline-block';
+                fetchButton.disabled = false; // Enable fetch button
+            } else {
+                authorizeButton.style.display = 'inline-block';
+                signoutButton.style.display = 'none';
+                fetchButton.style.display = 'none';
+                fetchButton.disabled = true; // Disable fetch button
+                // Re-enable authorize button only if initialization is complete
+                maybeEnableButtons();
+            }
+        }
+
+        // Enables the authorize button once both GAPI and GIS are initialized.
+        function maybeEnableButtons() {
+            console.log(`Checking button status: GAPI=${gapiInited}, GIS=${gisInited}`);
+            // Only enable if both libraries are ready AND the Client ID seems to be set
+            if (gapiInited && gisInited) {
+                 console.log("Both GAPI and GIS initialized.");
+                 if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                    // Message displayed in DOMContentLoaded
+                    authorizeButton.disabled = true; // Keep disabled until Client ID is set
+                    console.log("Authorize button kept disabled: Client ID placeholder found.");
+                } else {
+                    // Enable authorize button if not signed in, otherwise it should be hidden
+                    const isSignedIn = gapi.client.getToken() !== null;
+                     authorizeButton.disabled = isSignedIn; // Disable if already signed in (should be hidden anyway by updateSigninStatus)
+                     console.log(`Authorize button enabled state set to: ${!isSignedIn}`);
+                     // Ensure button visibility matches sign-in state
+                     if(isSignedIn) {
+                        authorizeButton.style.display = 'none';
+                     } else {
+                        authorizeButton.style.display = 'inline-block';
+                     }
+                }
+            } else {
+                console.log("Initialization incomplete. Keeping authorize button disabled.");
+                 authorizeButton.disabled = true;
+            }
+        }
+
+        // --- Calendar Data Fetching and Analysis (Functions remain the same) ---
+        async function fetchCalendarData() {
+             console.log("fetchCalendarData called");
+            const startHourInput = parseInt(document.getElementById('startHour').value, 10);
+            const endHourInput = parseInt(document.getElementById('endHour').value, 10);
+            const daysToQueryInput = parseInt(document.getElementById('daysToQuery').value, 10);
+
+            if (isNaN(startHourInput) || isNaN(endHourInput) || isNaN(daysToQueryInput) ||
+                startHourInput < 0 || startHourInput > 23 || endHourInput <= startHourInput || endHourInput > 23 ||
+                daysToQueryInput < 1 || daysToQueryInput > 90) {
+                displayError("Invalid input. Check start/end hours (0-23, end > start) and days (1-90).");
+                return;
+            }
+
+            fetchButton.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            resultsDiv.style.display = 'none';
+            contentElement.innerText = '';
+            errorMessageElement.style.display = 'none';
+
+            try {
+                const now = new Date();
+                const timeMax = new Date(now);
+                timeMax.setHours(23, 59, 59, 999);
+                const timeMin = new Date(now);
+                timeMin.setDate(now.getDate() - daysToQueryInput);
+                timeMin.setHours(0, 0, 0, 0);
+                 console.log(`Fetching events from ${timeMin.toISOString()} to ${timeMax.toISOString()}`);
+                const events = await listUpcomingEvents(timeMin.toISOString(), timeMax.toISOString());
+                if (events === null) {
+                     console.log("Event fetching failed or returned null.");
+                    return;
+                }
+                 console.log(`Fetched ${events.length} events.`);
+                const analysis = analyzeEvents(events, timeMin, daysToQueryInput, startHourInput, endHourInput);
+                 console.log("Analysis complete:", analysis);
+                displayResults(analysis, startHourInput, endHourInput, daysToQueryInput);
+            } catch (err) {
+                console.error('Error fetching or analyzing calendar data:', err);
+                displayError(`Error: ${err.message || 'Could not fetch or analyze data.'}`);
+            } finally {
+                 fetchButton.disabled = false;
+                 loadingSpinner.style.display = 'none';
+                 console.log("Fetch/Analyze process finished.");
+            }
+        }
+
+        async function listUpcomingEvents(timeMinISO, timeMaxISO) {
+            console.log("Calling Google Calendar API events.list");
+            // Ensure gapi client and calendar API are loaded before making the call
+             if (!gapiInited || !gapi.client || !gapi.client.calendar) {
+                 console.error("GAPI client or Calendar API not initialized.");
+                 displayError("GAPI client or Calendar API not ready. Please wait or refresh.");
+                 return null;
+             }
+            try {
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'timeMin': timeMinISO,
+                    'timeMax': timeMaxISO,
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'maxResults': 2500,
+                    'orderBy': 'startTime'
+                });
+                 console.log("Calendar API response received:", response);
+                return response.result.items || [];
+            } catch (err) {
+                console.error('Google Calendar API Error:', err);
+                let errorMsg = `Failed to fetch calendar events: ${err.result?.error?.message || err.message || 'Unknown API error.'}`;
+                 if (err.result?.error?.status === 'PERMISSION_DENIED') {
+                     errorMsg += ' Ensure you granted calendar access permission during sign-in.';
+                 } else if (err.result?.error?.status === 'NOT_FOUND') {
+                     errorMsg = 'Primary calendar not found for this account.';
+                 } else if (err.status === 401 || err.result?.error?.code === 401) {
+                     errorMsg = 'Authorization expired or invalid. Please Sign Out and Sign In again.';
+                     handleSignoutClick();
+                 } else if (err.status === 403 || err.result?.error?.code === 403) {
+                     errorMsg = `Permission denied (${err.result?.error?.message || 'Forbidden'}). Check API permissions in Google Cloud Console.`;
+                 }
+                displayError(errorMsg);
+                return null;
+            }
+        }
+
+        function analyzeEvents(events, startDate, numDays, workStartHour, workEndHour) {
+            console.log(`Analyzing ${events.length} events over ${numDays} days (starting from ${startDate.toDateString()}) between ${workStartHour}:00 and ${workEndHour}:00.`);
+            let totalMeetingMinutes = 0;
+            let totalWorkMinutes = 0;
+            let processedWeekdays = 0;
+            const oneDayMillis = 24 * 60 * 60 * 1000;
+
+            for (let i = 0; i < numDays; i++) {
+                const currentDay = new Date(startDate.getTime() + i * oneDayMillis);
+                const dayOfWeek = currentDay.getDay();
+                if (dayOfWeek === 0 || dayOfWeek === 6) { continue; }
+                processedWeekdays++;
+                const workStartTime = new Date(currentDay);
+                workStartTime.setHours(workStartHour, 0, 0, 0);
+                const workEndTime = new Date(currentDay);
+                workEndTime.setHours(workEndHour, 0, 0, 0);
+                const workStartTimeMillis = workStartTime.getTime();
+                const workEndTimeMillis = workEndTime.getTime();
+                const dailyWorkMinutes = (workEndTimeMillis - workStartTimeMillis) / (1000 * 60);
+                totalWorkMinutes += dailyWorkMinutes;
+
+                events.forEach(event => {
+                    if (!event.start?.dateTime || !event.end?.dateTime) { return; }
+                    const eventStartMillis = new Date(event.start.dateTime).getTime();
+                    const eventEndMillis = new Date(event.end.dateTime).getTime();
+                    const overlapStart = Math.max(eventStartMillis, workStartTimeMillis);
+                    const overlapEnd = Math.min(eventEndMillis, workEndTimeMillis);
+                    if (overlapEnd > overlapStart) {
+                        totalMeetingMinutes += (overlapEnd - overlapStart) / (1000 * 60);
+                    }
+                });
+            }
+             console.log(`Finished analysis: ${processedWeekdays} weekdays processed. Total work minutes: ${totalWorkMinutes}, Total meeting minutes: ${Math.round(totalMeetingMinutes)}`);
+            return {
+                totalMeetingMinutes: Math.round(totalMeetingMinutes),
+                totalWorkMinutes: totalWorkMinutes,
+                processedWeekdays: processedWeekdays
+            };
+        }
+
+        // --- UI Display Functions (Functions remain the same) ---
+        function displayResults(analysis, startHour, endHour, totalDaysQueried) {
+            resultsDiv.style.display = 'block';
+            errorMessageElement.style.display = 'none';
+            const { totalMeetingMinutes, totalWorkMinutes, processedWeekdays } = analysis;
+            if (processedWeekdays === 0) {
+                 contentElement.innerText = `Analyzed ${totalDaysQueried} past day(s).\nNo weekdays found in the selected period.`;
+                 return;
+            }
+            const meetingHours = (totalMeetingMinutes / 60).toFixed(1);
+            const totalWorkHours = totalWorkMinutes > 0 ? (totalWorkMinutes / 60).toFixed(1) : '0.0';
+            const meetingPercentage = totalWorkMinutes > 0 ? ((totalMeetingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0';
+            const workingPercentage = Math.max(0, 100 - parseFloat(meetingPercentage)).toFixed(1);
+            let output = `Analysis for the past ${totalDaysQueried} day(s) (${processedWeekdays} weekdays):\n`;
+            output += `Work Hours Configured: ${startHour}:00 - ${endHour}:00\n\n`;
+            output += `Total time scheduled in meetings during work hours: ${meetingHours} hours (${totalMeetingMinutes} minutes)\n`;
+            output += `Total available work hours during this period: ${totalWorkHours} hours (${totalWorkMinutes} minutes)\n\n`;
+            output += `Percentage of work hours spent in meetings: ${meetingPercentage}%\n`;
+            output += `Approximate percentage of work hours spent working (non-meeting): ${workingPercentage}%\n`;
+            contentElement.innerText = output;
+            console.log("Results displayed.");
+        }
+
+        function displayError(message) {
+            console.log("Displaying error:", message);
+            resultsDiv.style.display = 'block';
+            errorMessageElement.innerText = message;
+            errorMessageElement.style.display = 'block';
+            contentElement.innerText = '';
+        }
+
+        function displayMessage(text) {
+             console.log("Displaying message:", text);
+            messageText.innerText = text;
+            messageBox.style.display = 'block';
+            setTimeout(closeMessageBox, 5000);
+        }
+
+        function closeMessageBox() {
+            messageBox.style.display = 'none';
+        }
+
+
+        // --- Load Libraries and Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM fully loaded and parsed.");
+
+            // Set initial button states
+            authorizeButton.disabled = true;
+            fetchButton.disabled = true;
+            console.log("Initial button states set (disabled).");
+
+            // Check if Client ID placeholder is still present
+             if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                 displayMessage('Setup Required: Please replace "YOUR_GOOGLE_CLIENT_ID" in the HTML\'s JavaScript section with your actual Google Client ID.');
+                 console.warn("Client ID placeholder detected. Authorization will remain disabled.");
+             }
+
+            // --- Initialize GIS Client ---
+            // The GIS script is loaded via <script async defer> in <head>.
+            // It should be ready by the time DOMContentLoaded fires.
+            initializeGisClient(); // Attempt to initialize GIS
+
+            // --- Load GAPI Client ---
+            // Use the reliable dynamic script loading with onload for GAPI
+            window.gapiLoaded = gapiLoadedCallback; // Make callback global
+            const gapiScript = document.createElement('script');
+            gapiScript.src = 'https://apis.google.com/js/api.js?onload=gapiLoaded'; // Use onload parameter
+            gapiScript.async = true;
+            gapiScript.defer = true; // Still use defer for good measure
+            document.body.appendChild(gapiScript);
+            console.log("GAPI script added to body with onload callback.");
+
+        });
+
+    </script>
+</body>
+</html>
