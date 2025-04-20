@@ -6,6 +6,7 @@
     <title>Google Calendar Time Analyzer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom styles if needed */
         body {
@@ -65,8 +66,16 @@
         </div>
 
         <div id="results" class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200" style="display: none;">
-             <h2 class="text-lg font-semibold mb-3 text-gray-800">Analysis Results</h2>
-             <pre id="content" class="text-sm text-gray-700 whitespace-pre-wrap"></pre>
+             <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">Analysis Results</h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                 <div class="relative h-64 w-64 mx-auto md:h-72 md:w-72">
+                      <canvas id="utilizationChart"></canvas>
+                      <p id="chart-message" class="absolute inset-0 flex items-center justify-center text-center text-gray-500 text-sm p-4" style="display: none;"></p>
+                 </div>
+                 <div id="numerical-results" class="text-sm text-gray-700 space-y-2">
+                      {-- Numerical data will be populated here by JS --}
+                 </div>
+             </div>
              <div id="error-message" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md" style="display: none;"></div>
         </div>
 
@@ -86,31 +95,30 @@
         const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
         // --- Global Variables ---
-        let tokenClient; // For Google Identity Services (GIS) based token acquisition
-        let gapiInited = false; // Flag for GAPI library initialization
-        let gisInited = false; // Flag for GIS library initialization
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+        let utilizationChartInstance = null; // To hold the chart instance
 
         // --- DOM Elements ---
         const authorizeButton = document.getElementById('authorize_button');
         const signoutButton = document.getElementById('signout_button');
         const fetchButton = document.getElementById('fetch_button');
         const resultsDiv = document.getElementById('results');
-        const contentElement = document.getElementById('content');
+        const contentElement = document.getElementById('content'); // Keep for potential fallback/debug
+        const numericalResultsDiv = document.getElementById('numerical-results'); // New div for text results
+        const chartCanvas = document.getElementById('utilizationChart'); // Chart canvas
+        const chartMessageElement = document.getElementById('chart-message'); // Message overlay for chart area
         const errorMessageElement = document.getElementById('error-message');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const messageBox = document.getElementById('message-box');
         const messageText = document.getElementById('message-text');
 
-        // --- Initialization ---
-
-        // Function called by GAPI script loading callback
+        // --- Initialization (Functions remain the same) ---
         function gapiLoadedCallback() {
             console.log("GAPI script loaded via callback.");
-            // Load the 'client' discovery document for the Calendar API.
             gapi.load('client', initializeGapiClient);
         }
-
-        // Initializes the Google API client with the Calendar API discovery doc.
         async function initializeGapiClient() {
             console.log("Attempting to initialize GAPI client...");
             try {
@@ -123,50 +131,40 @@
             } catch (error) {
                 console.error('Error initializing GAPI client:', error);
                 displayError('Failed to initialize Google API Client. Check console for details.');
-                gapiInited = false; // Ensure flag is false on error
-                maybeEnableButtons(); // Update button state even on error
+                gapiInited = false;
+                maybeEnableButtons();
             }
         }
-
-        // Initializes the GIS token client. Called after DOM is loaded.
         function initializeGisClient() {
              console.log("Attempting to initialize GIS token client...");
-             // Check if the google object is available
              if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
                  console.error("GIS library (google.accounts.oauth2) not loaded yet.");
-                 // Optionally, retry after a short delay, but defer should handle this.
-                 // setTimeout(initializeGisClient, 500);
                  displayError('Failed to initialize Google Sign-In library. Please refresh the page.');
                  gisInited = false;
                  maybeEnableButtons();
                  return;
              }
-
             try {
-                // Initialize the token client
                 tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: CLIENT_ID,
                     scope: SCOPES,
-                    callback: tokenResponseCallback, // Handles token response
-                    error_callback: handleGisError, // Handles errors during token request
+                    callback: tokenResponseCallback,
+                    error_callback: handleGisError,
                 });
                 gisInited = true;
                 console.log("GIS token client initialized successfully.");
             } catch (error) {
                 console.error('Error initializing GIS client:', error);
                 displayError('Failed to initialize Google Sign-In. Is the Client ID correct? Check console.');
-                gisInited = false; // Ensure flag is false on error
+                gisInited = false;
             }
-            // Always call maybeEnableButtons after attempting GIS init
             maybeEnableButtons();
         }
 
-        // --- Authentication ---
-
-        // Initiates the OAuth 2.0 flow.
+        // --- Authentication (Functions remain the same) ---
         function handleAuthClick() {
             console.log("handleAuthClick called");
-             if (!gisInited || !tokenClient) { // Check gisInited flag as well
+             if (!gisInited || !tokenClient) {
                 console.error("Token client not initialized yet.");
                 displayMessage("Initialization incomplete. Please wait a moment and try again.");
                 return;
@@ -179,13 +177,12 @@
                 tokenClient.requestAccessToken({prompt: ''});
             }
         }
-
-        // Callback function for GIS token client.
         function tokenResponseCallback(resp) {
             if (resp.error) {
                  console.error('GIS Token Error:', resp.error, resp);
                  let message = `Error getting access token: ${resp.error}`;
-                 if (resp.error === 'popup_closed_by_user') {
+                 // ... (error handling messages remain the same)
+                  if (resp.error === 'popup_closed_by_user') {
                     message = 'Sign-in popup closed before completion.';
                  } else if (resp.error === 'access_denied') {
                      message = 'Access denied. Please grant permission to access your calendar.';
@@ -195,20 +192,18 @@
                      message = `Authorization error (${resp.error}). Check Client ID, Authorized Origins, and Scopes in Google Cloud Console.`;
                  }
                  displayMessage(message);
-                 updateSigninStatus(false); // Ensure UI reflects lack of token
+                 updateSigninStatus(false);
                  return;
             }
             console.log("Access token received successfully.");
-            // Successfully got access token. Set it in the GAPI client.
             gapi.client.setToken(resp);
             updateSigninStatus(true);
             displayMessage('Authorization successful! You can now fetch data.');
         }
-
-        // Handles specific GIS errors during token request.
         function handleGisError(error) {
             console.error('GIS Error during token request:', error);
             let message = `Google Sign-In Error: ${error.type || 'Unknown error'}.`;
+             // ... (error handling messages remain the same)
              if (error.type === 'popup_closed') {
                 message = 'Sign-in popup was closed before completion.';
              } else if (error.type === 'session_not_created' && error.message?.includes('invalid client id')) {
@@ -221,72 +216,66 @@
             displayMessage(message);
             updateSigninStatus(false);
         }
-
-
-        // Signs the user out.
         function handleSignoutClick() {
             console.log("handleSignoutClick called");
+            // Destroy chart if it exists
+            if (utilizationChartInstance) {
+                utilizationChartInstance.destroy();
+                utilizationChartInstance = null;
+                console.log("Chart destroyed on sign out.");
+            }
             const token = gapi.client.getToken();
             if (token !== null) {
                  console.log("Revoking token...");
-                 // Ensure google object and revoke function exist before calling
                  if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2 && google.accounts.oauth2.revoke) {
                     google.accounts.oauth2.revoke(token.access_token, (done) => {
                         console.log("Token revoked callback:", done);
-                        gapi.client.setToken(''); // Clear token in GAPI
+                        gapi.client.setToken('');
                         updateSigninStatus(false);
-                        resultsDiv.style.display = 'none'; // Hide results on sign out
-                        contentElement.innerText = ''; // Clear previous results
-                        errorMessageElement.style.display = 'none'; // Hide errors
+                        resultsDiv.style.display = 'none';
+                        numericalResultsDiv.innerHTML = ''; // Clear numerical results
+                        errorMessageElement.style.display = 'none';
                         displayMessage('You have been signed out.');
                     });
                  } else {
                      console.error("google.accounts.oauth2.revoke function not found. Cannot revoke token.");
-                     // Still clear local token and update UI
                      gapi.client.setToken('');
                      updateSigninStatus(false);
                      displayMessage('Signed out locally (could not contact Google to revoke).');
                  }
             } else {
                  console.log("No token found to revoke, updating UI.");
-                 updateSigninStatus(false); // Ensure UI is updated even if no token existed
+                 updateSigninStatus(false);
+                 resultsDiv.style.display = 'none'; // Hide results even if no token
+                 numericalResultsDiv.innerHTML = ''; // Clear numerical results
             }
         }
-
-        // Updates the UI based on the sign-in status.
         function updateSigninStatus(isSignedIn) {
              console.log("Updating sign-in status:", isSignedIn);
             if (isSignedIn) {
                 authorizeButton.style.display = 'none';
                 signoutButton.style.display = 'inline-block';
                 fetchButton.style.display = 'inline-block';
-                fetchButton.disabled = false; // Enable fetch button
+                fetchButton.disabled = false;
             } else {
                 authorizeButton.style.display = 'inline-block';
                 signoutButton.style.display = 'none';
                 fetchButton.style.display = 'none';
-                fetchButton.disabled = true; // Disable fetch button
-                // Re-enable authorize button only if initialization is complete
+                fetchButton.disabled = true;
                 maybeEnableButtons();
             }
         }
-
-        // Enables the authorize button once both GAPI and GIS are initialized.
         function maybeEnableButtons() {
             console.log(`Checking button status: GAPI=${gapiInited}, GIS=${gisInited}`);
-            // Only enable if both libraries are ready AND the Client ID seems to be set
             if (gapiInited && gisInited) {
                  console.log("Both GAPI and GIS initialized.");
                  if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
-                    // Message displayed in DOMContentLoaded
-                    authorizeButton.disabled = true; // Keep disabled until Client ID is set
+                    authorizeButton.disabled = true;
                     console.log("Authorize button kept disabled: Client ID placeholder found.");
                 } else {
-                    // Enable authorize button if not signed in, otherwise it should be hidden
                     const isSignedIn = gapi.client.getToken() !== null;
-                     authorizeButton.disabled = isSignedIn; // Disable if already signed in (should be hidden anyway by updateSigninStatus)
+                     authorizeButton.disabled = isSignedIn;
                      console.log(`Authorize button enabled state set to: ${!isSignedIn}`);
-                     // Ensure button visibility matches sign-in state
                      if(isSignedIn) {
                         authorizeButton.style.display = 'none';
                      } else {
@@ -315,9 +304,18 @@
 
             fetchButton.disabled = true;
             loadingSpinner.style.display = 'inline-block';
-            resultsDiv.style.display = 'none';
-            contentElement.innerText = '';
+            resultsDiv.style.display = 'none'; // Hide results initially
+            numericalResultsDiv.innerHTML = ''; // Clear previous numerical results
             errorMessageElement.style.display = 'none';
+            chartCanvas.style.display = 'none'; // Hide canvas initially
+            chartMessageElement.style.display = 'none'; // Hide chart message
+
+            // Destroy previous chart instance if it exists
+            if (utilizationChartInstance) {
+                utilizationChartInstance.destroy();
+                utilizationChartInstance = null;
+                console.log("Previous chart destroyed.");
+            }
 
             try {
                 const now = new Date();
@@ -330,12 +328,12 @@
                 const events = await listUpcomingEvents(timeMin.toISOString(), timeMax.toISOString());
                 if (events === null) {
                      console.log("Event fetching failed or returned null.");
-                    return;
+                    return; // Error already displayed
                 }
                  console.log(`Fetched ${events.length} events.`);
                 const analysis = analyzeEvents(events, timeMin, daysToQueryInput, startHourInput, endHourInput);
                  console.log("Analysis complete:", analysis);
-                displayResults(analysis, startHourInput, endHourInput, daysToQueryInput);
+                displayResults(analysis, startHourInput, endHourInput, daysToQueryInput); // Call updated display function
             } catch (err) {
                 console.error('Error fetching or analyzing calendar data:', err);
                 displayError(`Error: ${err.message || 'Could not fetch or analyze data.'}`);
@@ -345,10 +343,9 @@
                  console.log("Fetch/Analyze process finished.");
             }
         }
-
         async function listUpcomingEvents(timeMinISO, timeMaxISO) {
-            console.log("Calling Google Calendar API events.list");
-            // Ensure gapi client and calendar API are loaded before making the call
+            // ... (function remains the same)
+             console.log("Calling Google Calendar API events.list");
              if (!gapiInited || !gapi.client || !gapi.client.calendar) {
                  console.error("GAPI client or Calendar API not initialized.");
                  displayError("GAPI client or Calendar API not ready. Please wait or refresh.");
@@ -383,8 +380,8 @@
                 return null;
             }
         }
-
         function analyzeEvents(events, startDate, numDays, workStartHour, workEndHour) {
+             // ... (function remains the same)
             console.log(`Analyzing ${events.length} events over ${numDays} days (starting from ${startDate.toDateString()}) between ${workStartHour}:00 and ${workEndHour}:00.`);
             let totalMeetingMinutes = 0;
             let totalWorkMinutes = 0;
@@ -403,7 +400,10 @@
                 const workStartTimeMillis = workStartTime.getTime();
                 const workEndTimeMillis = workEndTime.getTime();
                 const dailyWorkMinutes = (workEndTimeMillis - workStartTimeMillis) / (1000 * 60);
-                totalWorkMinutes += dailyWorkMinutes;
+                 // Ensure dailyWorkMinutes is not negative if endHour < startHour accidentally
+                 if (dailyWorkMinutes > 0) {
+                    totalWorkMinutes += dailyWorkMinutes;
+                 }
 
                 events.forEach(event => {
                     if (!event.start?.dateTime || !event.end?.dateTime) { return; }
@@ -419,40 +419,161 @@
              console.log(`Finished analysis: ${processedWeekdays} weekdays processed. Total work minutes: ${totalWorkMinutes}, Total meeting minutes: ${Math.round(totalMeetingMinutes)}`);
             return {
                 totalMeetingMinutes: Math.round(totalMeetingMinutes),
-                totalWorkMinutes: totalWorkMinutes,
+                totalWorkMinutes: Math.round(totalWorkMinutes), // Round total work minutes as well
                 processedWeekdays: processedWeekdays
             };
         }
 
-        // --- UI Display Functions (Functions remain the same) ---
+        // --- UI Display Functions ---
+
+        // Displays the analysis results (Updated)
         function displayResults(analysis, startHour, endHour, totalDaysQueried) {
-            resultsDiv.style.display = 'block';
-            errorMessageElement.style.display = 'none';
+            resultsDiv.style.display = 'block'; // Show the main results container
+            errorMessageElement.style.display = 'none'; // Hide any previous errors
+            numericalResultsDiv.innerHTML = ''; // Clear previous numerical results
+            chartCanvas.style.display = 'none'; // Hide chart initially
+            chartMessageElement.style.display = 'none'; // Hide chart message
+
             const { totalMeetingMinutes, totalWorkMinutes, processedWeekdays } = analysis;
+
+            // --- Populate Numerical Results ---
+            let numericalOutput = `<p class="font-semibold text-gray-800">Period Analyzed:</p>`;
+            numericalOutput += `<p>Past ${totalDaysQueried} day(s) (${processedWeekdays} weekdays)</p>`;
+            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Work Hours Configured:</p>`;
+            numericalOutput += `<p>${startHour}:00 - ${endHour}:00 (Local Time)</p>`;
+
             if (processedWeekdays === 0) {
-                 contentElement.innerText = `Analyzed ${totalDaysQueried} past day(s).\nNo weekdays found in the selected period.`;
-                 return;
+                 numericalOutput += `<p class="mt-4 text-red-600">No weekdays found in the selected period to analyze.</p>`;
+                 numericalResultsDiv.innerHTML = numericalOutput;
+                 console.log("Results displayed: No weekdays.");
+                 return; // Stop here if no weekdays
             }
+
+             // Calculate derived values
             const meetingHours = (totalMeetingMinutes / 60).toFixed(1);
             const totalWorkHours = totalWorkMinutes > 0 ? (totalWorkMinutes / 60).toFixed(1) : '0.0';
+            // Ensure workingMinutes is not negative
+            const workingMinutes = Math.max(0, totalWorkMinutes - totalMeetingMinutes);
+            const workingHours = (workingMinutes / 60).toFixed(1);
             const meetingPercentage = totalWorkMinutes > 0 ? ((totalMeetingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0';
-            const workingPercentage = Math.max(0, 100 - parseFloat(meetingPercentage)).toFixed(1);
-            let output = `Analysis for the past ${totalDaysQueried} day(s) (${processedWeekdays} weekdays):\n`;
-            output += `Work Hours Configured: ${startHour}:00 - ${endHour}:00\n\n`;
-            output += `Total time scheduled in meetings during work hours: ${meetingHours} hours (${totalMeetingMinutes} minutes)\n`;
-            output += `Total available work hours during this period: ${totalWorkHours} hours (${totalWorkMinutes} minutes)\n\n`;
-            output += `Percentage of work hours spent in meetings: ${meetingPercentage}%\n`;
-            output += `Approximate percentage of work hours spent working (non-meeting): ${workingPercentage}%\n`;
-            contentElement.innerText = output;
-            console.log("Results displayed.");
+            const workingPercentage = totalWorkMinutes > 0 ? ((workingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0';
+
+
+            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Time Allocation:</p>`;
+            numericalOutput += `<ul class="list-disc list-inside space-y-1">`;
+            numericalOutput += `<li>Total Available Work Time: <span class="font-medium">${totalWorkHours} hrs</span> (${totalWorkMinutes} min)</li>`;
+            numericalOutput += `<li>Time in Meetings: <span class="font-medium">${meetingHours} hrs</span> (${totalMeetingMinutes} min)</li>`;
+            numericalOutput += `<li>Est. Work Time (Non-Meeting): <span class="font-medium">${workingHours} hrs</span> (${workingMinutes} min)</li>`;
+            numericalOutput += `</ul>`;
+            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Utilization:</p>`;
+             numericalOutput += `<ul class="list-disc list-inside space-y-1">`;
+            numericalOutput += `<li>Meeting Percentage: <span class="font-medium text-red-600">${meetingPercentage}%</span></li>`;
+            numericalOutput += `<li>Est. Work Percentage: <span class="font-medium text-blue-600">${workingPercentage}%</span></li>`;
+             numericalOutput += `</ul>`;
+
+            numericalResultsDiv.innerHTML = numericalOutput; // Add text results to the DOM
+
+            // --- Create Chart ---
+            if (totalWorkMinutes > 0) {
+                chartCanvas.style.display = 'block'; // Show the canvas
+                const ctx = chartCanvas.getContext('2d');
+
+                 // Destroy previous chart instance (redundant check, but safe)
+                if (utilizationChartInstance) {
+                    utilizationChartInstance.destroy();
+                }
+
+                utilizationChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Meetings', 'Work Time (Est.)'],
+                        datasets: [{
+                            label: 'Time Allocation (minutes)',
+                            data: [totalMeetingMinutes, workingMinutes], // Use calculated workingMinutes
+                            backgroundColor: [
+                                'rgba(239, 68, 68, 0.7)',  // Red-500 with opacity
+                                'rgba(59, 130, 246, 0.7)' // Blue-500 with opacity
+                            ],
+                             borderColor: [
+                                'rgba(239, 68, 68, 1)',  // Red-500 solid
+                                'rgba(59, 130, 246, 1)' // Blue-500 solid
+                            ],
+                            borderWidth: 1,
+                            hoverOffset: 8,
+                             hoverBackgroundColor: [ // Slightly darker on hover
+                                'rgba(220, 38, 38, 0.8)', // Red-600
+                                'rgba(37, 99, 235, 0.8)'  // Blue-600
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%', // Makes it a doughnut chart
+                        plugins: {
+                            legend: {
+                                position: 'bottom', // Move legend below chart
+                                labels: {
+                                    padding: 15 // Add padding to legend items
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            const valueMinutes = context.parsed;
+                                            const valueHours = (valueMinutes / 60).toFixed(1);
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = total > 0 ? ((valueMinutes / total) * 100).toFixed(1) : 0;
+                                            label += `${valueHours} hrs (${valueMinutes} min) - ${percentage}%`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                             title: { // Add a title to the chart
+                                display: true,
+                                text: 'Work Hours Allocation',
+                                padding: {
+                                    top: 10,
+                                    bottom: 10
+                                },
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log("Chart created and displayed.");
+            } else {
+                 // If totalWorkMinutes is 0, display a message in the chart area
+                 chartMessageElement.innerText = "No work time calculated for this period, cannot display chart.";
+                 chartMessageElement.style.display = 'flex'; // Use flex to center text
+                 chartCanvas.style.display = 'none'; // Ensure canvas is hidden
+                 console.log("Chart not displayed: Zero total work minutes.");
+            }
         }
 
         function displayError(message) {
             console.log("Displaying error:", message);
-            resultsDiv.style.display = 'block';
+            resultsDiv.style.display = 'block'; // Show results container to display the error
             errorMessageElement.innerText = message;
             errorMessageElement.style.display = 'block';
-            contentElement.innerText = '';
+            numericalResultsDiv.innerHTML = ''; // Clear numerical results on error
+            chartCanvas.style.display = 'none'; // Hide chart on error
+            chartMessageElement.style.display = 'none'; // Hide chart message
+
+            // Destroy chart if it exists when an error occurs
+            if (utilizationChartInstance) {
+                utilizationChartInstance.destroy();
+                utilizationChartInstance = null;
+                console.log("Chart destroyed due to error.");
+            }
         }
 
         function displayMessage(text) {
@@ -470,33 +591,21 @@
         // --- Load Libraries and Initialize ---
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM fully loaded and parsed.");
-
-            // Set initial button states
             authorizeButton.disabled = true;
             fetchButton.disabled = true;
             console.log("Initial button states set (disabled).");
-
-            // Check if Client ID placeholder is still present
              if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
                  displayMessage('Setup Required: Please replace "YOUR_GOOGLE_CLIENT_ID" in the HTML\'s JavaScript section with your actual Google Client ID.');
                  console.warn("Client ID placeholder detected. Authorization will remain disabled.");
              }
-
-            // --- Initialize GIS Client ---
-            // The GIS script is loaded via <script async defer> in <head>.
-            // It should be ready by the time DOMContentLoaded fires.
-            initializeGisClient(); // Attempt to initialize GIS
-
-            // --- Load GAPI Client ---
-            // Use the reliable dynamic script loading with onload for GAPI
-            window.gapiLoaded = gapiLoadedCallback; // Make callback global
+            initializeGisClient();
+            window.gapiLoaded = gapiLoadedCallback;
             const gapiScript = document.createElement('script');
-            gapiScript.src = 'https://apis.google.com/js/api.js?onload=gapiLoaded'; // Use onload parameter
+            gapiScript.src = 'https://apis.google.com/js/api.js?onload=gapiLoaded';
             gapiScript.async = true;
-            gapiScript.defer = true; // Still use defer for good measure
+            gapiScript.defer = true;
             document.body.appendChild(gapiScript);
             console.log("GAPI script added to body with onload callback.");
-
         });
 
     </script>
