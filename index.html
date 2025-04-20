@@ -16,7 +16,6 @@
             margin-left: 10px; vertical-align: middle;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* Style for weekday checkboxes */
         .weekday-label { display: inline-flex; align-items: center; margin-right: 1rem; cursor: pointer; }
         .weekday-checkbox { margin-right: 0.3rem; }
     </style>
@@ -27,100 +26,44 @@
 
         <div class="mb-6 p-4 bg-blue-50 rounded-md border border-blue-200 space-y-4">
             <h2 class="text-lg font-semibold mb-3 text-blue-800">Configuration</h2>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label for="startHour" class="block text-sm font-medium text-gray-700 mb-1">Work Start Hour (0-23):</label>
-                    <input type="number" id="startHour" value="9" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="endHour" class="block text-sm font-medium text-gray-700 mb-1">Work End Hour (0-23):</label>
-                    <input type="number" id="endHour" value="17" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="daysToQuery" class="block text-sm font-medium text-gray-700 mb-1">Number of Past Days:</label>
-                    <input type="number" id="daysToQuery" value="7" min="1" max="90" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                </div>
+                <div> <label for="startHour" class="block text-sm font-medium text-gray-700 mb-1">Work Start Hour (0-23):</label> <input type="number" id="startHour" value="9" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"> </div>
+                <div> <label for="endHour" class="block text-sm font-medium text-gray-700 mb-1">Work End Hour (0-23):</label> <input type="number" id="endHour" value="17" min="0" max="23" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"> </div>
+                <div> <label for="daysToQuery" class="block text-sm font-medium text-gray-700 mb-1">Number of Past Days:</label> <input type="number" id="daysToQuery" value="7" min="1" max="90" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"> </div>
             </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Work Weekdays:</label>
-                <div id="weekdays-container" class="flex flex-wrap gap-y-1">
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="0"> Sun</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="1" checked> Mon</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="2" checked> Tue</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="3" checked> Wed</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="4" checked> Thu</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="5" checked> Fri</label>
-                    <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="6"> Sat</label>
-                </div>
-            </div>
-
-             <div>
-                 <label for="timeZone" class="block text-sm font-medium text-gray-700 mb-1">Analysis Timezone:</label>
-                 <select id="timeZone" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                     <option value="local">Local Browser Time</option>
-                     <option value="UTC">UTC</option>
-                     <option value="America/New_York">America/New_York (ET)</option>
-                     <option value="America/Chicago">America/Chicago (CT)</option>
-                     <option value="America/Denver">America/Denver (MT)</option>
-                     <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
-                     <option value="Europe/London">Europe/London (GMT/BST)</option>
-                     <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
-                     <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
-                     <option value="Australia/Sydney">Australia/Sydney (AET/AEDT)</option>
-                 </select>
-                  <p class="text-xs text-gray-500 mt-1">Determines the time range (e.g., 9-5) for analysis.</p>
-             </div>
+            <div> <label class="block text-sm font-medium text-gray-700 mb-1">Work Weekdays:</label> <div id="weekdays-container" class="flex flex-wrap gap-y-1"> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="0"> Sun</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="1" checked> Mon</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="2" checked> Tue</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="3" checked> Wed</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="4" checked> Thu</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="5" checked> Fri</label> <label class="weekday-label"><input type="checkbox" class="weekday-checkbox" value="6"> Sat</label> </div> </div>
+            <div> <label for="timeZone" class="block text-sm font-medium text-gray-700 mb-1">Analysis Timezone:</label> <select id="timeZone" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"> <option value="local">Local Browser Time</option> <option value="UTC">UTC</option> <option value="America/New_York">America/New_York (ET)</option> <option value="America/Chicago">America/Chicago (CT)</option> <option value="America/Denver">America/Denver (MT)</option> <option value="America/Los_Angeles">America/Los_Angeles (PT)</option> <option value="Europe/London">Europe/London (GMT/BST)</option> <option value="Europe/Paris">Europe/Paris (CET/CEST)</option> <option value="Asia/Tokyo">Asia/Tokyo (JST)</option> <option value="Australia/Sydney">Australia/Sydney (AET/AEDT)</option> </select> <p class="text-xs text-gray-500 mt-1">Determines the time range (e.g., 9-5) for analysis.</p> </div>
         </div>
 
         <div class="flex justify-center space-x-4 mb-6">
-            <button id="authorize_button" onclick="handleAuthClick()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50" disabled>
-                Sign In & Authorize
-            </button>
-            <button id="signout_button" onclick="handleSignoutClick()" style="display: none;" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out">
-                Sign Out
-            </button>
-             <button id="fetch_button" onclick="fetchCalendarData()" style="display: none;" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50">
-                Fetch & Analyze Data <span id="loadingSpinner" class="loader" style="display: none;"></span>
-            </button>
+            <button id="authorize_button" onclick="handleAuthClick()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50" disabled> Sign In & Authorize </button> <button id="signout_button" onclick="handleSignoutClick()" style="display: none;" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out"> Sign Out </button> <button id="fetch_button" onclick="fetchCalendarData()" style="display: none;" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"> Fetch & Analyze Data <span id="loadingSpinner" class="loader" style="display: none;"></span> </button>
         </div>
 
         <div id="results" class="mt-6 p-4 bg-gray-50 rounded-md border border-gray-200" style="display: none;">
              <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">Analysis Results</h2>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                 <div class="relative h-64 w-64 mx-auto md:h-72 md:w-72">
+                 <div class="relative w-full max-w-xs mx-auto h-64 md:max-w-sm md:h-72">
                       <canvas id="utilizationChart"></canvas>
                       <p id="chart-message" class="absolute inset-0 flex items-center justify-center text-center text-gray-500 text-sm p-4" style="display: none;"></p>
                  </div>
-                 <div id="numerical-results" class="text-sm text-gray-700 space-y-2">
-                      {-- Numerical data will be populated here by JS --}
-                 </div>
+                 <div id="numerical-results" class="text-sm text-gray-700 space-y-2"></div>
              </div>
              <div id="error-message" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md" style="display: none;"></div>
         </div>
 
-         <div id="message-box" class="fixed top-5 right-5 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-md shadow-lg" role="alert" style="display: none; z-index: 1000;">
-            <strong class="font-bold">Notice:</strong>
-            <span class="block sm:inline" id="message-text"></span>
-            <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeMessageBox()">
-                <svg class="fill-current h-6 w-6 text-yellow-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
-            </span>
+        <div id="message-box" class="fixed top-5 right-5 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-md shadow-lg" role="alert" style="display: none; z-index: 1000;">
+            <strong class="font-bold">Notice:</strong> <span class="block sm:inline" id="message-text"></span> <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="closeMessageBox()"> <svg class="fill-current h-6 w-6 text-yellow-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg> </span>
         </div>
     </div>
 
     <script>
-        // --- Configuration ---
-        const CLIENT_ID = '132109609630-rtd6vrmntsjm8iljhk8f0cfe1rqr6l3b.apps.googleusercontent.com'; // IMPORTANT: Replace
+        // --- Configuration, Globals, DOM Elements --- (No changes)
+        const CLIENT_ID = '132109609630-rtd6vrmntsjm8iljhk8f0cfe1rqr6l3b.apps.googleusercontent.com';
         const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-
-        // --- Global Variables ---
         let tokenClient;
         let gapiInited = false;
         let gisInited = false;
         let utilizationChartInstance = null;
-
-        // --- DOM Elements ---
         const authorizeButton = document.getElementById('authorize_button');
         const signoutButton = document.getElementById('signout_button');
         const fetchButton = document.getElementById('fetch_button');
@@ -135,362 +78,96 @@
         const weekdaysContainer = document.getElementById('weekdays-container');
         const timeZoneSelect = document.getElementById('timeZone');
 
-        // --- Initialization Functions --- (No changes needed)
-        function gapiLoadedCallback() { /* ... */ console.log("GAPI script loaded via callback."); gapi.load('client', initializeGapiClient); }
-        async function initializeGapiClient() { /* ... */ console.log("Attempting to initialize GAPI client..."); try { await gapi.client.init({ discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'], }); gapiInited = true; console.log("GAPI client initialized successfully."); maybeEnableButtons(); } catch (error) { console.error('Error initializing GAPI client:', error); displayError('Failed to initialize Google API Client. Check console for details.'); gapiInited = false; maybeEnableButtons(); } }
-        function initializeGisClient() { /* ... */ console.log("Attempting to initialize GIS token client..."); if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) { console.error("GIS library (google.accounts.oauth2) not loaded yet."); displayError('Failed to initialize Google Sign-In library. Please refresh the page.'); gisInited = false; maybeEnableButtons(); return; } try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: tokenResponseCallback, error_callback: handleGisError, }); gisInited = true; console.log("GIS token client initialized successfully."); } catch (error) { console.error('Error initializing GIS client:', error); displayError('Failed to initialize Google Sign-In. Is the Client ID correct? Check console.'); gisInited = false; } maybeEnableButtons(); }
+        // --- Initialization Functions --- (No changes)
+        function gapiLoadedCallback() { console.log("GAPI script loaded via callback."); gapi.load('client', initializeGapiClient); }
+        async function initializeGapiClient() { console.log("Attempting to initialize GAPI client..."); try { await gapi.client.init({ discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'], }); gapiInited = true; console.log("GAPI client initialized successfully."); maybeEnableButtons(); } catch (error) { console.error('Error initializing GAPI client:', error); displayError('Failed to initialize Google API Client. Check console for details.'); gapiInited = false; maybeEnableButtons(); } }
+        function initializeGisClient() { console.log("Attempting to initialize GIS token client..."); if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) { console.error("GIS library (google.accounts.oauth2) not available when expected."); displayError('Failed to initialize Google Sign-In library components. Please refresh.'); gisInited = false; maybeEnableButtons(); return; } try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: tokenResponseCallback, error_callback: handleGisError, }); gisInited = true; console.log("GIS token client initialized successfully."); } catch (error) { console.error('Error initializing GIS token client:', error); displayError('Failed to initialize Google Sign-In token client. Is the Client ID correct? Check console.'); gisInited = false; } maybeEnableButtons(); } // Added maybeEnableButtons here too
 
-        // --- Authentication Functions --- (No changes needed)
-        function handleAuthClick() { /* ... */ console.log("handleAuthClick called"); if (!gisInited || !tokenClient) { console.error("Token client not initialized yet."); displayMessage("Initialization incomplete. Please wait a moment and try again."); return; } if (gapi.client.getToken() === null) { console.log("Requesting access token with consent prompt."); tokenClient.requestAccessToken({prompt: 'consent'}); } else { console.log("Requesting access token without prompt (existing session)."); tokenClient.requestAccessToken({prompt: ''}); } }
-        function tokenResponseCallback(resp) { /* ... */ if (resp.error) { console.error('GIS Token Error:', resp.error, resp); let message = `Error getting access token: ${resp.error}`; if (resp.error === 'popup_closed_by_user') { message = 'Sign-in popup closed before completion.'; } else if (resp.error === 'access_denied') { message = 'Access denied. Please grant permission to access your calendar.'; } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.'; } else if (resp.error === 'invalid_request' || resp.error === 'unauthorized_client' || resp.error === 'invalid_grant' || resp.error === 'invalid_scope') { message = `Authorization error (${resp.error}). Check Client ID, Authorized Origins, and Scopes in Google Cloud Console.`; } displayMessage(message); updateSigninStatus(false); return; } console.log("Access token received successfully."); gapi.client.setToken(resp); updateSigninStatus(true); displayMessage('Authorization successful! You can now fetch data.'); }
-        function handleGisError(error) { /* ... */ console.error('GIS Error during token request:', error); let message = `Google Sign-In Error: ${error.type || 'Unknown error'}.`; if (error.type === 'popup_closed') { message = 'Sign-in popup was closed before completion.'; } else if (error.type === 'session_not_created' && error.message?.includes('invalid client id')) { message = 'Sign-in Error: Invalid Client ID. Please ensure it is configured correctly in the Google Cloud Console and in the script.'; } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.'; } else if (error.message) { message += ` Details: ${error.message}`; } displayMessage(message); updateSigninStatus(false); }
-        function handleSignoutClick() { /* ... */ console.log("handleSignoutClick called"); if (utilizationChartInstance) { utilizationChartInstance.destroy(); utilizationChartInstance = null; console.log("Chart destroyed on sign out."); } const token = gapi.client.getToken(); if (token !== null) { console.log("Revoking token..."); if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2 && google.accounts.oauth2.revoke) { google.accounts.oauth2.revoke(token.access_token, (done) => { console.log("Token revoked callback:", done); gapi.client.setToken(''); updateSigninStatus(false); resultsDiv.style.display = 'none'; numericalResultsDiv.innerHTML = ''; errorMessageElement.style.display = 'none'; displayMessage('You have been signed out.'); }); } else { console.error("google.accounts.oauth2.revoke function not found. Cannot revoke token."); gapi.client.setToken(''); updateSigninStatus(false); displayMessage('Signed out locally (could not contact Google to revoke).'); } } else { console.log("No token found to revoke, updating UI."); updateSigninStatus(false); resultsDiv.style.display = 'none'; numericalResultsDiv.innerHTML = ''; } }
-        function updateSigninStatus(isSignedIn) { /* ... */ console.log("Updating sign-in status:", isSignedIn); if (isSignedIn) { authorizeButton.style.display = 'none'; signoutButton.style.display = 'inline-block'; fetchButton.style.display = 'inline-block'; fetchButton.disabled = false; } else { authorizeButton.style.display = 'inline-block'; signoutButton.style.display = 'none'; fetchButton.style.display = 'none'; fetchButton.disabled = true; maybeEnableButtons(); } }
-        function maybeEnableButtons() { /* ... */ console.log(`Checking button status: GAPI=${gapiInited}, GIS=${gisInited}`); if (gapiInited && gisInited) { console.log("Both GAPI and GIS initialized."); if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { authorizeButton.disabled = true; console.log("Authorize button kept disabled: Client ID placeholder found."); } else { const isSignedIn = gapi.client.getToken() !== null; authorizeButton.disabled = isSignedIn; console.log(`Authorize button enabled state set to: ${!isSignedIn}`); if(isSignedIn) { authorizeButton.style.display = 'none'; } else { authorizeButton.style.display = 'inline-block'; } } } else { console.log("Initialization incomplete. Keeping authorize button disabled."); authorizeButton.disabled = true; } }
+        // --- Authentication Functions --- (No changes)
+        function handleAuthClick() { console.log("handleAuthClick called"); if (!gisInited || !tokenClient) { console.error("Token client not initialized yet."); displayMessage("Initialization incomplete. Please wait a moment and try again."); return; } if (gapi.client.getToken() === null) { console.log("Requesting access token with consent prompt."); tokenClient.requestAccessToken({prompt: 'consent'}); } else { console.log("Requesting access token without prompt (existing session)."); tokenClient.requestAccessToken({prompt: ''}); } }
+        function tokenResponseCallback(resp) { if (resp.error) { console.error('GIS Token Error:', resp.error, resp); let message = `Error getting access token: ${resp.error}`; if (resp.error === 'popup_closed_by_user') { message = 'Sign-in popup closed before completion.'; } else if (resp.error === 'access_denied') { message = 'Access denied. Please grant permission to access your calendar.'; } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.'; } else if (resp.error === 'invalid_request' || resp.error === 'unauthorized_client' || resp.error === 'invalid_grant' || resp.error === 'invalid_scope') { message = `Authorization error (${resp.error}). Check Client ID, Authorized Origins, and Scopes in Google Cloud Console.`; } displayMessage(message); updateSigninStatus(false); return; } console.log("Access token received successfully."); gapi.client.setToken(resp); updateSigninStatus(true); displayMessage('Authorization successful! You can now fetch data.'); }
+        function handleGisError(error) { console.error('GIS Error during token request:', error); let message = `Google Sign-In Error: ${error.type || 'Unknown error'}.`; if (error.type === 'popup_closed') { message = 'Sign-in popup was closed before completion.'; } else if (error.type === 'session_not_created' && error.message?.includes('invalid client id')) { message = 'Sign-in Error: Invalid Client ID. Please ensure it is configured correctly in the Google Cloud Console and in the script.'; } else if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { message = 'Error: Please replace "YOUR_GOOGLE_CLIENT_ID" in the code with your actual Google Client ID.'; } else if (error.message) { message += ` Details: ${error.message}`; } displayMessage(message); updateSigninStatus(false); }
+        function handleSignoutClick() { console.log("handleSignoutClick called"); if (utilizationChartInstance) { utilizationChartInstance.destroy(); utilizationChartInstance = null; console.log("Chart destroyed on sign out."); } const token = gapi.client.getToken(); if (token !== null) { console.log("Revoking token..."); if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2 && google.accounts.oauth2.revoke) { google.accounts.oauth2.revoke(token.access_token, (done) => { console.log("Token revoked callback:", done); gapi.client.setToken(''); updateSigninStatus(false); resultsDiv.style.display = 'none'; numericalResultsDiv.innerHTML = ''; errorMessageElement.style.display = 'none'; displayMessage('You have been signed out.'); }); } else { console.error("google.accounts.oauth2.revoke function not found. Cannot revoke token."); gapi.client.setToken(''); updateSigninStatus(false); displayMessage('Signed out locally (could not contact Google to revoke).'); } } else { console.log("No token found to revoke, updating UI."); updateSigninStatus(false); resultsDiv.style.display = 'none'; numericalResultsDiv.innerHTML = ''; } }
+        function updateSigninStatus(isSignedIn) { console.log("Updating sign-in status:", isSignedIn); if (isSignedIn) { authorizeButton.style.display = 'none'; signoutButton.style.display = 'inline-block'; fetchButton.style.display = 'inline-block'; fetchButton.disabled = false; } else { authorizeButton.style.display = 'inline-block'; signoutButton.style.display = 'none'; fetchButton.style.display = 'none'; fetchButton.disabled = true; maybeEnableButtons(); } }
+        function maybeEnableButtons() { console.log(`Checking button status: GAPI=${gapiInited}, GIS=${gisInited}`); if (gapiInited && gisInited) { console.log("Both GAPI and GIS initialized."); if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { authorizeButton.disabled = true; console.log("Authorize button kept disabled: Client ID placeholder found."); } else { const isSignedIn = gapi.client.getToken() !== null; authorizeButton.disabled = isSignedIn; console.log(`Authorize button enabled state set to: ${!isSignedIn}`); if(isSignedIn) { authorizeButton.style.display = 'none'; } else { authorizeButton.style.display = 'inline-block'; } } } else { console.log("Initialization incomplete. Keeping authorize button disabled."); authorizeButton.disabled = true; } }
 
-        // --- Calendar Data Fetching and Analysis ---
+        // --- Calendar Data Fetching and Analysis --- (No changes)
+        function getSelectedWeekdays() { const checkboxes = weekdaysContainer.querySelectorAll('.weekday-checkbox:checked'); const days = Array.from(checkboxes).map(cb => parseInt(cb.value, 10)); console.log("Selected weekdays:", days); return days; }
+        function getSelectedTimeZone() { const selectedTz = timeZoneSelect.value; if (selectedTz === 'local') { const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone; console.log("Selected timezone: local, resolved to:", localTz); return localTz; } console.log("Selected timezone:", selectedTz); return selectedTz; }
+        async function fetchCalendarData() { console.log("fetchCalendarData called"); const startHourInput = parseInt(document.getElementById('startHour').value, 10); const endHourInput = parseInt(document.getElementById('endHour').value, 10); const daysToQueryInput = parseInt(document.getElementById('daysToQuery').value, 10); const selectedWeekdays = getSelectedWeekdays(); const selectedTimeZone = getSelectedTimeZone(); if (isNaN(startHourInput) || isNaN(endHourInput) || isNaN(daysToQueryInput) || startHourInput < 0 || startHourInput > 23 || endHourInput <= startHourInput || endHourInput > 23 || daysToQueryInput < 1 || daysToQueryInput > 90) { displayError("Invalid input. Check start/end hours (0-23, end > start) and days (1-90)."); return; } if (selectedWeekdays.length === 0) { displayError("Please select at least one workday."); return; } if (!selectedTimeZone) { displayError("Could not determine timezone. Please select one."); return; } fetchButton.disabled = true; loadingSpinner.style.display = 'inline-block'; resultsDiv.style.display = 'none'; numericalResultsDiv.innerHTML = ''; errorMessageElement.style.display = 'none'; chartCanvas.style.display = 'none'; chartMessageElement.style.display = 'none'; if (utilizationChartInstance) { utilizationChartInstance.destroy(); utilizationChartInstance = null; console.log("Previous chart destroyed."); } try { const now = new Date(); const timeMaxUTC = new Date(now); timeMaxUTC.setUTCHours(23, 59, 59, 999); const timeMinUTC = new Date(now); timeMinUTC.setUTCDate(now.getUTCDate() - daysToQueryInput); timeMinUTC.setUTCHours(0, 0, 0, 0); console.log(`Fetching events from ${timeMinUTC.toISOString()} to ${timeMaxUTC.toISOString()} (UTC)`); const events = await listUpcomingEvents(timeMinUTC.toISOString(), timeMaxUTC.toISOString()); if (events === null) { console.log("Event fetching failed or returned null."); return; } console.log(`Fetched ${events.length} events.`); const analysis = analyzeEvents( events, timeMinUTC, daysToQueryInput, startHourInput, endHourInput, selectedWeekdays, selectedTimeZone ); console.log("Analysis complete:", analysis); displayResults(analysis, startHourInput, endHourInput, daysToQueryInput, selectedWeekdays, selectedTimeZone); } catch (err) { console.error('Error fetching or analyzing calendar data:', err); if (err instanceof RangeError && err.message.includes("time zone")) { displayError(`Error: The selected timezone "${selectedTimeZone}" is not recognized by your browser. Please choose another or use "Local Browser Time".`); } else { displayError(`Error: ${err.message || 'Could not fetch or analyze data.'}`); } } finally { fetchButton.disabled = false; loadingSpinner.style.display = 'none'; console.log("Fetch/Analyze process finished."); } }
+        async function listUpcomingEvents(timeMinISO_UTC, timeMaxISO_UTC) { console.log("Calling Google Calendar API events.list"); if (!gapiInited || !gapi.client || !gapi.client.calendar) { console.error("GAPI client or Calendar API not initialized."); displayError("GAPI client or Calendar API not ready. Please wait or refresh."); return null; } try { const response = await gapi.client.calendar.events.list({ 'calendarId': 'primary', 'timeMin': timeMinISO_UTC, 'timeMax': timeMaxISO_UTC, 'showDeleted': false, 'singleEvents': true, 'maxResults': 2500, 'orderBy': 'startTime' }); console.log("Calendar API response received:", response); return response.result.items || []; } catch (err) { console.error('Google Calendar API Error:', err); let errorMsg = `Failed to fetch calendar events: ${err.result?.error?.message || err.message || 'Unknown API error.'}`; if (err.result?.error?.status === 'PERMISSION_DENIED') { errorMsg += ' Ensure you granted calendar access permission during sign-in.'; } else if (err.result?.error?.status === 'NOT_FOUND') { errorMsg = 'Primary calendar not found for this account.'; } else if (err.status === 401 || err.result?.error?.code === 401) { errorMsg = 'Authorization expired or invalid. Please Sign Out and Sign In again.'; handleSignoutClick(); } else if (err.status === 403 || err.result?.error?.code === 403) { errorMsg = `Permission denied (${err.result?.error?.message || 'Forbidden'}). Check API permissions in Google Cloud Console.`; } displayError(errorMsg); return null; } }
+        function analyzeEvents(events, startDateUTC, numDays, workStartHour, workEndHour, selectedWeekdays, targetTimeZone) { console.log(`Analyzing ${events.length} events over ${numDays} days (starting from ${startDateUTC.toISOString()})`); console.log(`Work Hours: ${workStartHour}:00-${workEndHour}:00 in Timezone: ${targetTimeZone}`); console.log(`Selected Weekdays (0=Sun): ${selectedWeekdays.join(', ')}`); let totalMeetingMinutes = 0; let totalWorkMinutes = 0; let processedWorkdays = 0; const oneDayMillis = 24 * 60 * 60 * 1000; const getTimestampInTimezone = (dateObj, hour, minute, second, tz) => { const year = dateObj.toLocaleDateString('en-CA', { timeZone: tz, year: 'numeric' }); const month = dateObj.toLocaleDateString('en-CA', { timeZone: tz, month: '2-digit' }); const day = dateObj.toLocaleDateString('en-CA', { timeZone: tz, day: '2-digit' }); const dateStringInTz = `${year}-${month}-${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`; const dateInTz = new Date(dateStringInTz); if (isNaN(dateInTz.getTime())) { console.error(`Could not parse date string: ${dateStringInTz} for timezone ${tz}`); const fallbackDate = new Date(Date.UTC(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate(), hour, minute, second)); if(isNaN(fallbackDate.getTime())) { throw new Error(`Failed to create valid date for ${dateStringInTz}`); } console.warn("Using UTC fallback for timestamp calculation."); return fallbackDate.getTime(); } return dateInTz.getTime(); }; for (let i = 0; i < numDays; i++) { const currentDay = new Date(startDateUTC.getTime() + i * oneDayMillis); const dayOfWeekString = currentDay.toLocaleDateString('en-US', { timeZone: targetTimeZone, weekday: 'short' }); const dayOfWeekInTargetTZ = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(dayOfWeekString); if (!selectedWeekdays.includes(dayOfWeekInTargetTZ)) { continue; } processedWorkdays++; try { const workStartTimeMillis = getTimestampInTimezone(currentDay, workStartHour, 0, 0, targetTimeZone); const workEndTimeMillis = getTimestampInTimezone(currentDay, workEndHour, 0, 0, targetTimeZone); const dailyWorkMinutes = (workEndTimeMillis - workStartTimeMillis) / (1000 * 60); if (dailyWorkMinutes > 0) { totalWorkMinutes += dailyWorkMinutes; } events.forEach(event => { if (!event.start?.dateTime || !event.end?.dateTime) { return; } const eventStartMillis = new Date(event.start.dateTime).getTime(); const eventEndMillis = new Date(event.end.dateTime).getTime(); const overlapStart = Math.max(eventStartMillis, workStartTimeMillis); const overlapEnd = Math.min(eventEndMillis, workEndTimeMillis); if (overlapEnd > overlapStart) { const overlapMinutes = (overlapEnd - overlapStart) / (1000 * 60); totalMeetingMinutes += overlapMinutes; } }); } catch (e) { console.error(`Error processing day ${currentDay.toISOString()} for timezone ${targetTimeZone}: ${e.message}`); throw e; } } console.log(`Finished analysis: ${processedWorkdays} workdays processed. Total work minutes: ${Math.round(totalWorkMinutes)}, Total meeting minutes: ${Math.round(totalMeetingMinutes)}`); return { totalMeetingMinutes: Math.round(totalMeetingMinutes), totalWorkMinutes: Math.round(totalWorkMinutes), processedWorkdays: processedWorkdays }; }
 
-        // Helper function to get selected weekdays
-        function getSelectedWeekdays() {
-            const checkboxes = weekdaysContainer.querySelectorAll('.weekday-checkbox:checked');
-            const days = Array.from(checkboxes).map(cb => parseInt(cb.value, 10));
-            console.log("Selected weekdays:", days);
-            return days; // Returns array of numbers [0-6]
-        }
+        // --- UI Display Functions --- (No changes)
+        function displayResults(analysis, startHour, endHour, totalDaysQueried, selectedWeekdays, selectedTimeZone) { resultsDiv.style.display = 'block'; errorMessageElement.style.display = 'none'; numericalResultsDiv.innerHTML = ''; chartCanvas.style.display = 'none'; chartMessageElement.style.display = 'none'; const { totalMeetingMinutes, totalWorkMinutes, processedWorkdays } = analysis; const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; const selectedDayNames = selectedWeekdays.map(d => dayNames[d]).join(', '); let numericalOutput = `<p class="font-semibold text-gray-800">Period Analyzed:</p>`; numericalOutput += `<p>Past ${totalDaysQueried} day(s)</p>`; numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Configuration Used:</p>`; numericalOutput += `<ul class="list-disc list-inside space-y-1">`; numericalOutput += `<li>Work Hours: ${startHour}:00 - ${endHour}:00</li>`; numericalOutput += `<li>Work Weekdays: ${selectedDayNames}</li>`; numericalOutput += `<li>Timezone: ${selectedTimeZone}</li>`; numericalOutput += `</ul>`; if (processedWorkdays === 0) { numericalOutput += `<p class="mt-4 font-semibold text-red-600">No days matching the selected weekdays were found in the period.</p>`; numericalResultsDiv.innerHTML = numericalOutput; console.log("Results displayed: No matching workdays."); return; } const meetingHours = (totalMeetingMinutes / 60).toFixed(1); const totalWorkHours = totalWorkMinutes > 0 ? (totalWorkMinutes / 60).toFixed(1) : '0.0'; const workingMinutes = Math.max(0, totalWorkMinutes - totalMeetingMinutes); const workingHours = (workingMinutes / 60).toFixed(1); const meetingPercentage = totalWorkMinutes > 0 ? ((totalMeetingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0'; const workingPercentage = totalWorkMinutes > 0 ? ((workingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0'; numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Time Allocation (${processedWorkdays} workdays):</p>`; numericalOutput += `<ul class="list-disc list-inside space-y-1">`; numericalOutput += `<li>Total Available Work Time: <span class="font-medium">${totalWorkHours} hrs</span> (${totalWorkMinutes} min)</li>`; numericalOutput += `<li>Time in Meetings: <span class="font-medium">${meetingHours} hrs</span> (${totalMeetingMinutes} min)</li>`; numericalOutput += `<li>Est. Work Time (Non-Meeting): <span class="font-medium">${workingHours} hrs</span> (${workingMinutes} min)</li>`; numericalOutput += `</ul>`; numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Utilization:</p>`; numericalOutput += `<ul class="list-disc list-inside space-y-1">`; numericalOutput += `<li>Meeting Percentage: <span class="font-medium text-red-600">${meetingPercentage}%</span></li>`; numericalOutput += `<li>Est. Work Percentage: <span class="font-medium text-blue-600">${workingPercentage}%</span></li>`; numericalOutput += `</ul>`; numericalResultsDiv.innerHTML = numericalOutput; if (totalWorkMinutes > 0) { chartCanvas.style.display = 'block'; const ctx = chartCanvas.getContext('2d'); if (utilizationChartInstance) { utilizationChartInstance.destroy(); } utilizationChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Meetings', 'Work Time (Est.)'], datasets: [{ label: 'Time Allocation (minutes)', data: [totalMeetingMinutes, workingMinutes], backgroundColor: [ 'rgba(239, 68, 68, 0.7)', 'rgba(59, 130, 246, 0.7)' ], borderColor: [ 'rgba(239, 68, 68, 1)', 'rgba(59, 130, 246, 1)' ], borderWidth: 1, hoverOffset: 8, hoverBackgroundColor: [ 'rgba(220, 38, 38, 0.8)', 'rgba(37, 99, 235, 0.8)' ] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { padding: 15 } }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { const valueMinutes = context.parsed; const valueHours = (valueMinutes / 60).toFixed(1); const total = context.dataset.data.reduce((a, b) => a + b, 0); const percentage = total > 0 ? ((valueMinutes / total) * 100).toFixed(1) : 0; label += `${valueHours} hrs (${valueMinutes} min) - ${percentage}%`; } return label; } } }, title: { display: true, text: 'Work Hours Allocation', padding: { top: 10, bottom: 10 }, font: { size: 14 } } } } }); console.log("Chart created and displayed."); } else { chartMessageElement.innerText = `No work time calculated for the ${processedWorkdays} workday(s) found. Cannot display chart.`; chartMessageElement.style.display = 'flex'; chartCanvas.style.display = 'none'; console.log("Chart not displayed: Zero total work minutes."); } }
+        function displayError(message) { console.log("Displaying error:", message); resultsDiv.style.display = 'block'; errorMessageElement.innerText = message; errorMessageElement.style.display = 'block'; numericalResultsDiv.innerHTML = ''; chartCanvas.style.display = 'none'; chartMessageElement.style.display = 'none'; if (utilizationChartInstance) { utilizationChartInstance.destroy(); utilizationChartInstance = null; console.log("Chart destroyed due to error."); } }
+        function displayMessage(text) { console.log("Displaying message:", text); messageText.innerText = text; messageBox.style.display = 'block'; setTimeout(closeMessageBox, 5000); }
+        function closeMessageBox() { messageBox.style.display = 'none'; }
 
-        // Helper function to get the selected timezone identifier
-        function getSelectedTimeZone() {
-            const selectedTz = timeZoneSelect.value;
-            // If 'local', return the browser's actual IANA timezone name
-            if (selectedTz === 'local') {
-                const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                console.log("Selected timezone: local, resolved to:", localTz);
-                return localTz;
-            }
-            console.log("Selected timezone:", selectedTz);
-            return selectedTz;
-        }
-
-        // Fetches events from the user's primary calendar and analyzes them.
-        async function fetchCalendarData() {
-             console.log("fetchCalendarData called");
-            // --- 1. Get User Input ---
-            const startHourInput = parseInt(document.getElementById('startHour').value, 10);
-            const endHourInput = parseInt(document.getElementById('endHour').value, 10);
-            const daysToQueryInput = parseInt(document.getElementById('daysToQuery').value, 10);
-            const selectedWeekdays = getSelectedWeekdays();
-            const selectedTimeZone = getSelectedTimeZone(); // Get IANA name or resolved local name
-
-            // Basic input validation
-            if (isNaN(startHourInput) || isNaN(endHourInput) || isNaN(daysToQueryInput) ||
-                startHourInput < 0 || startHourInput > 23 || endHourInput <= startHourInput || endHourInput > 23 ||
-                daysToQueryInput < 1 || daysToQueryInput > 90) {
-                displayError("Invalid input. Check start/end hours (0-23, end > start) and days (1-90).");
-                return;
-            }
-             if (selectedWeekdays.length === 0) {
-                 displayError("Please select at least one workday.");
-                 return;
-             }
-              if (!selectedTimeZone) {
-                 displayError("Could not determine timezone. Please select one.");
-                 return;
-             }
-
-
-            // Show loading state
-            fetchButton.disabled = true;
-            loadingSpinner.style.display = 'inline-block';
-            resultsDiv.style.display = 'none';
-            numericalResultsDiv.innerHTML = '';
-            errorMessageElement.style.display = 'none';
-            chartCanvas.style.display = 'none';
-            chartMessageElement.style.display = 'none';
-
-            // Destroy previous chart instance
-            if (utilizationChartInstance) {
-                utilizationChartInstance.destroy();
-                utilizationChartInstance = null;
-                console.log("Previous chart destroyed.");
-            }
-
-            try {
-                // --- 2. Calculate Date Range (using UTC for API) ---
-                // We fetch a broad range in UTC and filter locally based on target timezone work hours
-                const now = new Date();
-                const timeMaxUTC = new Date(now);
-                timeMaxUTC.setUTCHours(23, 59, 59, 999); // End of current day UTC
-
-                const timeMinUTC = new Date(now);
-                timeMinUTC.setUTCDate(now.getUTCDate() - daysToQueryInput); // Subtract days in UTC
-                timeMinUTC.setUTCHours(0, 0, 0, 0); // Start of that day UTC
-
-                 console.log(`Fetching events from ${timeMinUTC.toISOString()} to ${timeMaxUTC.toISOString()} (UTC)`);
-
-                // --- 3. Fetch Calendar Events ---
-                // Note: We are NOT passing timeZone to the API here. We handle it locally.
-                const events = await listUpcomingEvents(timeMinUTC.toISOString(), timeMaxUTC.toISOString());
-
-                if (events === null) {
-                     console.log("Event fetching failed or returned null.");
-                    return; // Error already displayed
-                }
-                 console.log(`Fetched ${events.length} events.`);
-
-                // --- 4. Analyze Events ---
-                const analysis = analyzeEvents(
-                    events,
-                    timeMinUTC, // Start date for iteration (UTC based)
-                    daysToQueryInput,
-                    startHourInput,
-                    endHourInput,
-                    selectedWeekdays,
-                    selectedTimeZone // Pass selected timezone
-                );
-                 console.log("Analysis complete:", analysis);
-
-                // --- 5. Display Results ---
-                displayResults(analysis, startHourInput, endHourInput, daysToQueryInput, selectedWeekdays, selectedTimeZone);
-
-            } catch (err) {
-                console.error('Error fetching or analyzing calendar data:', err);
-                // Check for specific timezone support errors
-                 if (err instanceof RangeError && err.message.includes("time zone")) {
-                     displayError(`Error: The selected timezone "${selectedTimeZone}" is not recognized by your browser. Please choose another or use "Local Browser Time".`);
-                 } else {
-                    displayError(`Error: ${err.message || 'Could not fetch or analyze data.'}`);
-                 }
-            } finally {
-                 fetchButton.disabled = false;
-                 loadingSpinner.style.display = 'none';
-                 console.log("Fetch/Analyze process finished.");
-            }
-        }
-
-        // Lists events (no change needed here, still uses UTC range)
-        async function listUpcomingEvents(timeMinISO_UTC, timeMaxISO_UTC) {
-            // ... (function remains the same)
-             console.log("Calling Google Calendar API events.list");
-             if (!gapiInited || !gapi.client || !gapi.client.calendar) { /* ... */ return null; }
-            try {
-                const response = await gapi.client.calendar.events.list({
-                    'calendarId': 'primary',
-                    'timeMin': timeMinISO_UTC, // Use UTC time range
-                    'timeMax': timeMaxISO_UTC, // Use UTC time range
-                    'showDeleted': false,
-                    'singleEvents': true,
-                    'maxResults': 2500,
-                    'orderBy': 'startTime'
-                    // 'timeZone': selectedTimeZone // DO NOT set timezone here if handling locally
-                });
-                 console.log("Calendar API response received:", response);
-                return response.result.items || [];
-            } catch (err) { /* ... */ console.error('Google Calendar API Error:', err); let errorMsg = `Failed to fetch calendar events: ${err.result?.error?.message || err.message || 'Unknown API error.'}`; if (err.result?.error?.status === 'PERMISSION_DENIED') { errorMsg += ' Ensure you granted calendar access permission during sign-in.'; } else if (err.result?.error?.status === 'NOT_FOUND') { errorMsg = 'Primary calendar not found for this account.'; } else if (err.status === 401 || err.result?.error?.code === 401) { errorMsg = 'Authorization expired or invalid. Please Sign Out and Sign In again.'; handleSignoutClick(); } else if (err.status === 403 || err.result?.error?.code === 403) { errorMsg = `Permission denied (${err.result?.error?.message || 'Forbidden'}). Check API permissions in Google Cloud Console.`; } displayError(errorMsg); return null; }
-        }
-
-        // Analyzes events considering selected weekdays and timezone (Updated)
-        function analyzeEvents(events, startDateUTC, numDays, workStartHour, workEndHour, selectedWeekdays, targetTimeZone) {
-            console.log(`Analyzing ${events.length} events over ${numDays} days (starting from ${startDateUTC.toISOString()})`);
-            console.log(`Work Hours: ${workStartHour}:00-${workEndHour}:00 in Timezone: ${targetTimeZone}`);
-            console.log(`Selected Weekdays (0=Sun): ${selectedWeekdays.join(', ')}`);
-
-            let totalMeetingMinutes = 0;
-            let totalWorkMinutes = 0;
-            let processedWorkdays = 0;
-            const oneDayMillis = 24 * 60 * 60 * 1000;
-
-            // Helper to get UTC timestamp for a specific hour on a specific date IN the target timezone
-            // Throws RangeError if timezone is invalid
-            const getTimestampInTimezone = (dateObj, hour, minute, second, tz) => {
-                 // Format the date parts according to the target timezone
-                 const year = dateObj.toLocaleDateString('en-CA', { timeZone: tz, year: 'numeric' }); // YYYY
-                 const month = dateObj.toLocaleDateString('en-CA', { timeZone: tz, month: '2-digit' }); // MM
-                 const day = dateObj.toLocaleDateString('en-CA', { timeZone: tz, day: '2-digit' }); // DD
-
-                 // Construct a date string *as it appears* in the target timezone
-                 // IMPORTANT: We create a new Date object from this string. JS Date constructor
-                 // usually parses ISO-like strings as UTC, but simpler strings like "YYYY-MM-DD HH:MM:SS"
-                 // are often parsed as *local* time. This is a known ambiguity.
-                 // However, we immediately call getTime() to get the UTC epoch milliseconds,
-                 // which *should* represent the intended point in time regardless of the intermediate parsing details.
-                 // This relies on the browser's Intl and Date implementations.
-                 const dateStringInTz = `${year}-${month}-${day}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
-
-                 // Create a Date object from the string representation in the target timezone
-                 const dateInTz = new Date(dateStringInTz);
-
-                 // Check if the date is valid after parsing
-                 if (isNaN(dateInTz.getTime())) {
-                     console.error(`Could not parse date string: ${dateStringInTz} for timezone ${tz}`);
-                     // Attempt fallback using UTC components (less accurate for TZ shifts)
-                     const fallbackDate = new Date(Date.UTC(dateObj.getUTCFullYear(), dateObj.getUTCMonth(), dateObj.getUTCDate(), hour, minute, second));
-                     if(isNaN(fallbackDate.getTime())) {
-                        throw new Error(`Failed to create valid date for ${dateStringInTz}`);
-                     }
-                     console.warn("Using UTC fallback for timestamp calculation.");
-                     return fallbackDate.getTime();
-                     // Or throw error: throw new Error(`Could not parse date string: ${dateStringInTz}`);
-                 }
-
-                 // Return the UTC timestamp (milliseconds since epoch)
-                 return dateInTz.getTime();
-            };
-
-
-            // Iterate through each day in the query range (based on UTC start date)
-            for (let i = 0; i < numDays; i++) {
-                // currentDay represents the start of the day in UTC
-                const currentDay = new Date(startDateUTC.getTime() + i * oneDayMillis);
-                // Get the day of the week *in the target timezone* to check against selectedWeekdays
-                // Use toLocaleDateString for this, as getDay() is always local/UTC based on object context
-                const dayOfWeekString = currentDay.toLocaleDateString('en-US', { timeZone: targetTimeZone, weekday: 'short' }); // e.g., "Mon"
-                // A slightly hacky way to get the numeric day (0-6) in the target timezone
-                const dayOfWeekInTargetTZ = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(dayOfWeekString);
-
-                // Check if this day (in the target timezone) is a selected workday
-                if (!selectedWeekdays.includes(dayOfWeekInTargetTZ)) {
-                     // console.log(`Skipping day ${currentDay.toISOString()} (Day ${dayOfWeekInTargetTZ} in ${targetTimeZone}) - not a selected workday.`);
-                    continue;
-                }
-
-                processedWorkdays++;
-                // console.log(`Processing day ${currentDay.toISOString()} (Day ${dayOfWeekInTargetTZ} in ${targetTimeZone})`);
-
-                try {
-                    // Calculate work start and end times as UTC timestamps for the current day IN the target timezone
-                    const workStartTimeMillis = getTimestampInTimezone(currentDay, workStartHour, 0, 0, targetTimeZone);
-                    const workEndTimeMillis = getTimestampInTimezone(currentDay, workEndHour, 0, 0, targetTimeZone);
-
-                    // Add total possible work minutes for this workday
-                    const dailyWorkMinutes = (workEndTimeMillis - workStartTimeMillis) / (1000 * 60);
-                    if (dailyWorkMinutes > 0) {
-                        totalWorkMinutes += dailyWorkMinutes;
-                         // console.log(` Added ${dailyWorkMinutes.toFixed(0)} potential work minutes for this day. Total work minutes: ${totalWorkMinutes.toFixed(0)}`);
-                    } else {
-                        // console.warn(` Calculated zero or negative work minutes for ${currentDay.toISOString()} in ${targetTimeZone}. Start: ${new Date(workStartTimeMillis).toISOString()}, End: ${new Date(workEndTimeMillis).toISOString()}`);
-                    }
-
-
-                    // Filter and sum duration of events within work hours for this day (comparing UTC timestamps)
-                    events.forEach(event => {
-                        if (!event.start?.dateTime || !event.end?.dateTime) { return; } // Skip all-day events
-
-                        // Event times are already ISO strings (effectively UTC or with offset)
-                        const eventStartMillis = new Date(event.start.dateTime).getTime();
-                        const eventEndMillis = new Date(event.end.dateTime).getTime();
-
-                        // Check for overlap using UTC timestamps
-                        const overlapStart = Math.max(eventStartMillis, workStartTimeMillis);
-                        const overlapEnd = Math.min(eventEndMillis, workEndTimeMillis);
-
-                        if (overlapEnd > overlapStart) {
-                            const overlapMinutes = (overlapEnd - overlapStart) / (1000 * 60);
-                            totalMeetingMinutes += overlapMinutes;
-                             // console.log(`  Event "${event.summary || 'No Title'}" overlaps by ${overlapMinutes.toFixed(1)} minutes. Total meeting minutes: ${totalMeetingMinutes.toFixed(1)}`);
-                        }
-                    });
-                } catch (e) {
-                     // Catch potential RangeError from invalid timezone in getTimestampInTimezone
-                     console.error(`Error processing day ${currentDay.toISOString()} for timezone ${targetTimeZone}: ${e.message}`);
-                     // Rethrow the error so fetchCalendarData can catch and display it
-                     throw e;
-                }
-            }
-             console.log(`Finished analysis: ${processedWorkdays} workdays processed. Total work minutes: ${Math.round(totalWorkMinutes)}, Total meeting minutes: ${Math.round(totalMeetingMinutes)}`);
-
-            return {
-                totalMeetingMinutes: Math.round(totalMeetingMinutes),
-                totalWorkMinutes: Math.round(totalWorkMinutes),
-                processedWorkdays: processedWorkdays
-            };
-        }
-
-
-        // --- UI Display Functions ---
-
-        // Displays the analysis results (Updated)
-        function displayResults(analysis, startHour, endHour, totalDaysQueried, selectedWeekdays, selectedTimeZone) {
-            resultsDiv.style.display = 'block';
-            errorMessageElement.style.display = 'none';
-            numericalResultsDiv.innerHTML = '';
-            chartCanvas.style.display = 'none';
-            chartMessageElement.style.display = 'none';
-
-            const { totalMeetingMinutes, totalWorkMinutes, processedWorkdays } = analysis;
-
-            // --- Populate Numerical Results ---
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const selectedDayNames = selectedWeekdays.map(d => dayNames[d]).join(', ');
-
-            let numericalOutput = `<p class="font-semibold text-gray-800">Period Analyzed:</p>`;
-            numericalOutput += `<p>Past ${totalDaysQueried} day(s)</p>`;
-            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Configuration Used:</p>`;
-            numericalOutput += `<ul class="list-disc list-inside space-y-1">`;
-            numericalOutput += `<li>Work Hours: ${startHour}:00 - ${endHour}:00</li>`;
-            numericalOutput += `<li>Work Weekdays: ${selectedDayNames}</li>`;
-            numericalOutput += `<li>Timezone: ${selectedTimeZone}</li>`;
-            numericalOutput += `</ul>`;
-
-            if (processedWorkdays === 0) {
-                 numericalOutput += `<p class="mt-4 font-semibold text-red-600">No days matching the selected weekdays were found in the period.</p>`;
-                 numericalResultsDiv.innerHTML = numericalOutput;
-                 console.log("Results displayed: No matching workdays.");
-                 return;
-            }
-
-            const meetingHours = (totalMeetingMinutes / 60).toFixed(1);
-            const totalWorkHours = totalWorkMinutes > 0 ? (totalWorkMinutes / 60).toFixed(1) : '0.0';
-            const workingMinutes = Math.max(0, totalWorkMinutes - totalMeetingMinutes);
-            const workingHours = (workingMinutes / 60).toFixed(1);
-            const meetingPercentage = totalWorkMinutes > 0 ? ((totalMeetingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0';
-            const workingPercentage = totalWorkMinutes > 0 ? ((workingMinutes / totalWorkMinutes) * 100).toFixed(1) : '0.0';
-
-            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Time Allocation (${processedWorkdays} workdays):</p>`;
-            numericalOutput += `<ul class="list-disc list-inside space-y-1">`;
-            numericalOutput += `<li>Total Available Work Time: <span class="font-medium">${totalWorkHours} hrs</span> (${totalWorkMinutes} min)</li>`;
-            numericalOutput += `<li>Time in Meetings: <span class="font-medium">${meetingHours} hrs</span> (${totalMeetingMinutes} min)</li>`;
-            numericalOutput += `<li>Est. Work Time (Non-Meeting): <span class="font-medium">${workingHours} hrs</span> (${workingMinutes} min)</li>`;
-            numericalOutput += `</ul>`;
-            numericalOutput += `<p class="mt-2 font-semibold text-gray-800">Utilization:</p>`;
-             numericalOutput += `<ul class="list-disc list-inside space-y-1">`;
-            numericalOutput += `<li>Meeting Percentage: <span class="font-medium text-red-600">${meetingPercentage}%</span></li>`;
-            numericalOutput += `<li>Est. Work Percentage: <span class="font-medium text-blue-600">${workingPercentage}%</span></li>`;
-             numericalOutput += `</ul>`;
-
-            numericalResultsDiv.innerHTML = numericalOutput;
-
-            // --- Create Chart ---
-            if (totalWorkMinutes > 0) {
-                chartCanvas.style.display = 'block';
-                const ctx = chartCanvas.getContext('2d');
-                if (utilizationChartInstance) { utilizationChartInstance.destroy(); } // Destroy previous
-
-                utilizationChartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: { /* ... (data remains same) */ labels: ['Meetings', 'Work Time (Est.)'], datasets: [{ label: 'Time Allocation (minutes)', data: [totalMeetingMinutes, workingMinutes], backgroundColor: [ 'rgba(239, 68, 68, 0.7)', 'rgba(59, 130, 246, 0.7)' ], borderColor: [ 'rgba(239, 68, 68, 1)', 'rgba(59, 130, 246, 1)' ], borderWidth: 1, hoverOffset: 8, hoverBackgroundColor: [ 'rgba(220, 38, 38, 0.8)', 'rgba(37, 99, 235, 0.8)' ] }] },
-                    options: { /* ... (options remain same) */ responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { padding: 15 } }, tooltip: { callbacks: { label: function(context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { const valueMinutes = context.parsed; const valueHours = (valueMinutes / 60).toFixed(1); const total = context.dataset.data.reduce((a, b) => a + b, 0); const percentage = total > 0 ? ((valueMinutes / total) * 100).toFixed(1) : 0; label += `${valueHours} hrs (${valueMinutes} min) - ${percentage}%`; } return label; } } }, title: { display: true, text: 'Work Hours Allocation', padding: { top: 10, bottom: 10 }, font: { size: 14 } } } }
-                });
-                console.log("Chart created and displayed.");
-            } else {
-                 chartMessageElement.innerText = `No work time calculated for the ${processedWorkdays} workday(s) found. Cannot display chart.`;
-                 chartMessageElement.style.display = 'flex';
-                 chartCanvas.style.display = 'none';
-                 console.log("Chart not displayed: Zero total work minutes.");
-            }
-        }
-
-        function displayError(message) {
-            // ... (function remains the same)
-            console.log("Displaying error:", message); resultsDiv.style.display = 'block'; errorMessageElement.innerText = message; errorMessageElement.style.display = 'block'; numericalResultsDiv.innerHTML = ''; chartCanvas.style.display = 'none'; chartMessageElement.style.display = 'none'; if (utilizationChartInstance) { utilizationChartInstance.destroy(); utilizationChartInstance = null; console.log("Chart destroyed due to error."); }
-        }
-        function displayMessage(text) { /* ... */ console.log("Displaying message:", text); messageText.innerText = text; messageBox.style.display = 'block'; setTimeout(closeMessageBox, 5000); }
-        function closeMessageBox() { /* ... */ messageBox.style.display = 'none'; }
-
-
-        // --- Load Libraries and Initialize ---
+        // --- Load Libraries and Initialize --- UPDATED ---
         document.addEventListener('DOMContentLoaded', () => {
-            // ... (initialization logic remains the same)
-            console.log("DOM fully loaded and parsed."); authorizeButton.disabled = true; fetchButton.disabled = true; console.log("Initial button states set (disabled)."); if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') { displayMessage('Setup Required: Please replace "YOUR_GOOGLE_CLIENT_ID" in the HTML\'s JavaScript section with your actual Google Client ID.'); console.warn("Client ID placeholder detected. Authorization will remain disabled."); } initializeGisClient(); window.gapiLoaded = gapiLoadedCallback; const gapiScript = document.createElement('script'); gapiScript.src = 'https://apis.google.com/js/api.js?onload=gapiLoaded'; gapiScript.async = true; gapiScript.defer = true; document.body.appendChild(gapiScript); console.log("GAPI script added to body with onload callback.");
+            console.log("DOM fully loaded and parsed.");
+            authorizeButton.disabled = true;
+            fetchButton.disabled = true;
+            console.log("Initial button states set (disabled).");
+
+             if (CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID') {
+                 displayMessage('Setup Required: Please replace "YOUR_GOOGLE_CLIENT_ID" in the HTML\'s JavaScript section with your actual Google Client ID.');
+                 console.warn("Client ID placeholder detected. Authorization will remain disabled.");
+             }
+
+            // --- Initialize GIS Client using google.accounts.id.initialize ---
+            // This attempts to ensure the core GIS library is ready first.
+            try {
+                // Check if google object exists, wait briefly if not (basic guard)
+                if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+                    console.warn("Google object not immediately available, waiting briefly...");
+                    setTimeout(() => {
+                        console.log("Retrying GIS initialization after delay...");
+                        if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+                             console.error("GIS library still not available after delay.");
+                             displayError('Failed to initialize Google Sign-In components (timeout). Please refresh.');
+                             gisInited = false;
+                             maybeEnableButtons();
+                             return;
+                        }
+                        // Retry initialization
+                         try {
+                            google.accounts.id.initialize({ client_id: CLIENT_ID }); // Basic init
+                            console.log("google.accounts.id initialized successfully (after delay).");
+                            // Now initialize the token client
+                            initializeGisClient();
+                         } catch (e) {
+                             console.error("Error during delayed GIS initialization:", e);
+                             displayError('Failed to initialize Google Sign-In components. Please refresh.');
+                             gisInited = false;
+                             maybeEnableButtons();
+                         }
+                    }, 1000); // Wait 1 second before retrying
+                } else {
+                    // Google object seems available, proceed immediately
+                    google.accounts.id.initialize({ client_id: CLIENT_ID }); // Basic init
+                    console.log("google.accounts.id initialized successfully.");
+                    // Now initialize the token client
+                    initializeGisClient();
+                }
+            } catch (e) {
+                 console.error("Error during initial GIS check/initialization:", e);
+                 displayError('Failed to initialize Google Sign-In components. Please refresh.');
+                 gisInited = false;
+                 maybeEnableButtons();
+            }
+
+
+            // --- Load GAPI Client --- (Keep as is)
+            window.gapiLoaded = gapiLoadedCallback;
+            const gapiScript = document.createElement('script');
+            gapiScript.src = 'https://apis.google.com/js/api.js?onload=gapiLoaded';
+            gapiScript.async = true;
+            gapiScript.defer = true;
+            document.body.appendChild(gapiScript);
+            console.log("GAPI script added to body with onload callback.");
+
         });
 
     </script>
